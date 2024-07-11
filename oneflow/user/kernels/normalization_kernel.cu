@@ -1248,6 +1248,20 @@ class NormalizationInferenceKernel final : public user_op::OpKernel,
                                     y->mut_dptr()));
     }
 
+    if (ctx->op_type_name() == "normalization_add_relu") {
+      CHECK(!ctx->has_input("_add_to_output", 0));
+      const int64_t elem_cnt = x->shape_view().elem_cnt();
+      auto* mask = ctx->Tensor4ArgNameAndIndex("reserve_space", 0);
+      if (ctx->has_input("addend", 0)) {
+        const auto* addend = ctx->Tensor4ArgNameAndIndex("addend", 0);
+        AddRelu(ctx->stream(), elem_cnt, data_type, y->dptr(), addend->dptr(), y->mut_dptr(),
+                mask->mut_dptr<int64_t>());
+      } else {
+        Relu(ctx->stream(), elem_cnt, data_type, y->dptr(), y->mut_dptr(),
+             mask->mut_dptr<int64_t>());
+      }
+    }
+
   }
 
   bool AlwaysComputeWhenAllOutputsEmpty() const override { return false; }

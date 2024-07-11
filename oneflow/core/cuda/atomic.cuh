@@ -221,19 +221,11 @@ __device__ __forceinline__ double AddImpl(double* address, double val) {
 }
 
 __device__ __forceinline__ half AddImpl(half* address, half val) { 
-  float address_value = __half2float(*address);
-  half old =  __float2half(atomicAdd(&address_value, __half2float(val))); 
-  *address = __float2half(address_value);
-  return old
+  return atomicAdd(address, val);
 }
 
 __device__ __forceinline__ half2 AddImpl(half2* address, half2 val) {
-  float2 address_value = __half22float2(*address);
-  half2 old;
-  old.data.x = __float2half(atomicAdd(&address_value.x, __half2float(val.data.x)));
-  old.data.y = __float2half(atomicAdd(&address_value.y, __half2float(val.data.y)));
-  *address =  __float22half2(address_value);
-  return old;
+  return atomicAdd(address, val);
 }
 
 #endif

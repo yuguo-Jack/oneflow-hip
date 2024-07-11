@@ -99,7 +99,7 @@ struct ToContiguousUtil : ToContiguousUtilBase {
   TO_CONTIGUOUS_COMMON_TYPES COMPLEX_DATA_TYPE_SEQ OF_PP_MAKE_TUPLE_SEQ( \
       float16, DataType::kFloat16) OF_PP_MAKE_TUPLE_SEQ(bfloat16, DataType::kBFloat16)
 
-#if defined(WITH_CUDA) || defined(WITH_ROCM)
+#if defined(WITH_CUDA)
 #if CUDA_VERSION >= 11000
 #define TO_CONTIGUOUS_CUDA_SPECIAL_TYPE                  \
   OF_PP_MAKE_TUPLE_SEQ(half, DataType::kFloat16)         \
@@ -113,4 +113,12 @@ struct ToContiguousUtil : ToContiguousUtilBase {
   OF_PP_MAKE_TUPLE_SEQ(cuDoubleComplex, DataType::kComplex128)
 #endif  // CUDA_VERSION >= 11000
 #endif  // WITH_CUDA
+
+#if defined(WITH_ROCM)
+#define TO_CONTIGUOUS_CUDA_SPECIAL_TYPE                 \
+  OF_PP_MAKE_TUPLE_SEQ(half, DataType::kFloat16)        \
+  OF_PP_MAKE_TUPLE_SEQ(hipComplex, DataType::kComplex64) \
+  OF_PP_MAKE_TUPLE_SEQ(hipDoubleComplex, DataType::kComplex128)
+#endif  // WITH_ROCM
+
 #endif  // ONEFLOW_USER_KERNELS_TO_CONTIGUOUS_KERNEL_H_

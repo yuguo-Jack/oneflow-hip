@@ -1,12 +1,20 @@
 include(python)
 
 function(oneflow_add_executable)
-  add_executable(${ARGV})
+  if(BUILD_ROCM)
+    hip_add_executable(${ARGV})
+  else()
+    add_executable(${ARGV})
+  endif()
   set_compile_options_to_oneflow_target(${ARGV0})
 endfunction()
 
 function(oneflow_add_library)
-  add_library(${ARGV})
+  if(BUILD_ROCM)
+    hip_add_library(${ARGV})
+  else()
+    add_library(${ARGV})
+  endif()
   set_compile_options_to_oneflow_target(${ARGV0})
 endfunction()
 
@@ -81,19 +89,7 @@ foreach(oneflow_single_file ${oneflow_all_src})
       list(APPEND of_all_obj_cc ${oneflow_single_file})
     endif()
     if(BUILD_ROCM)
-      if("${oneflow_single_file}" MATCHES "^${PROJECT_SOURCE_DIR}/oneflow/(core|user)/.*\\.cu$")
-        get_filename_component(oneflow_single_file_hip_cpp_dir ${oneflow_single_file} DIRECTORY)
-        get_filename_component(oneflow_single_file_hip_cpp ${oneflow_single_file} NAME_WE)
-        add_custom_command(
-          OUTPUT "${oneflow_single_file_hip_cpp_dir}/${oneflow_single_file_hip_cpp}_hip.cpp" 
-          COMMAND ${CMAKE_COMMAND} -E copy "${oneflow_single_file}" "${oneflow_single_file_hip_cpp_dir}/${oneflow_single_file_hip_cpp}_hip.cpp" 
-          DEPENDS "${oneflow_single_file}" 
-        ) 
-        list(APPEND of_all_obj_cc ${oneflow_single_file_hip_cpp_dir}/${oneflow_single_file_hip_cpp}_hip.cpp)
-      endif()
-      if("${oneflow_single_file}" MATCHES "^${PROJECT_SOURCE_DIR}/oneflow/(core|user)/.*\\.cuh$")
-        list(APPEND of_all_obj_cc ${oneflow_single_file})
-      endif()
+      list(APPEND of_all_obj_cc ${oneflow_single_file})
     endif()
     set(group_this ON)
   endif()
@@ -352,6 +348,9 @@ elseif(UNIX)
   if(BUILD_CUDA)
     target_link_libraries(oneflow CUDA::cudart_static)
   endif()
+  if(BUILD_ROCM)
+    target_link_libraries(oneflow ${LLVM_INSTALL_DIR}/lib64/libLLVMDemangle.a)
+  endif()
   if(WITH_OMP)
     if(OpenMP_CXX_FOUND)
       target_link_libraries(oneflow OpenMP::OpenMP_CXX)
@@ -362,16 +361,16 @@ elseif(WIN32)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /WHOLEARCHIVE:oneflow")
 endif()
 
-if (BUILD_ROCM)
-  # AMD compiler fails to compile these three files with '-O1/2/3'.
-  # The value of `COMPILE_OPTIONS` target property is added after CMAKE_<LANG>_FLAGS_<CONFIG>,
-  # so '-O0' will override '-O1/2/3'.
-  set_source_files_properties(${PROJECT_SOURCE_DIR}/oneflow/user/kernels/median_with_indices_kernel_hip.cpp
-                              ${PROJECT_SOURCE_DIR}/oneflow/user/kernels/radix_sort_top_k_kernel_hip.cpp
-                              ${PROJECT_SOURCE_DIR}/oneflow/user/kernels/arg_sort_kernel_hip.cpp
-                              #${PROJECT_SOURCE_DIR}/oneflow/core/ep/cuda/primitive/broadcast_elementwise_binary_math_3_hip.cpp
-                              PROPERTIES COMPILE_OPTIONS "-O0")
-endif()
+# if (BUILD_ROCM)
+#   # AMD compiler fails to compile these three files with '-O1/2/3'.
+#   # The value of `COMPILE_OPTIONS` target property is added after CMAKE_<LANG>_FLAGS_<CONFIG>,
+#   # so '-O0' will override '-O1/2/3'.
+#   set_source_files_properties(${PROJECT_SOURCE_DIR}/oneflow/user/kernels/median_with_indices_kernel_hip.cpp
+#                               ${PROJECT_SOURCE_DIR}/oneflow/user/kernels/radix_sort_top_k_kernel_hip.cpp
+#                               ${PROJECT_SOURCE_DIR}/oneflow/user/kernels/arg_sort_kernel_hip.cpp
+#                               #${PROJECT_SOURCE_DIR}/oneflow/core/ep/cuda/primitive/broadcast_elementwise_binary_math_3_hip.cpp
+#                               PROPERTIES COMPILE_OPTIONS "-O0")
+# endif()
 
 if(BUILD_CUDA)
   string(JOIN "," CUDA_REAL_ARCHS ${CUDA_REAL_ARCHS_LIST})

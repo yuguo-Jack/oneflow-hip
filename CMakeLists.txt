@@ -73,14 +73,6 @@ set(CUDNN_STATIC OFF CACHE BOOL "")
 
 project(oneflow C CXX)
 
-if (BUILD_ROCM)
-  # Search for rocm in common locations
-  #FIND_PACKAGE(HIP REQUIRED)
-  list(APPEND CMAKE_PREFIX_PATH ${ROCM_PATH} ${ROCM_PATH}/hip ${ROCM_PATH}/llvm)
-  set(CMAKE_MODULE_PATH "${HIP_PATH}/cmake" ${CMAKE_MODULE_PATH})
-  set(CMAKE_MODULE_PATH "${HIP_PATH}/lib/cmake/hip" ${CMAKE_MODULE_PATH})
-endif()
-
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default Release)" FORCE)
@@ -231,6 +223,9 @@ use_mirror(VARIABLE CUTLASS_URL URL ${CUTLASS_URL})
 set(CUTLASS_MD5 425f8cf064ff47c81124e55490135f5c)
 
 include(cuda)
+if (BUILD_ROCM)
+  include(hip)
+endif()
 add_subdirectory(external)
 include(third_party)
 
@@ -242,5 +237,22 @@ add_custom_target(oneflow_deps ALL DEPENDS prepare_oneflow_third_party)
 if(ONEFLOW)
   include(oneflow)
 endif()
+
+# 1. 获取当前的 INTERFACE_COMPILE_OPTIONS 属性列表
+get_property(current_hip_device_options TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS)
+message(STATUS "hip::device INTERFACE_COMPILE_OPTIONS: ${current_hip_device_options}")
+
+# 2. 创建一个新的列表，去掉不需要的选项
+list(REMOVE_ITEM current_hip_device_options "--offload-arch=gfx906")
+list(REMOVE_ITEM current_hip_device_options "--offload-arch=gfx926")
+list(REMOVE_ITEM current_hip_device_options "--offload-arch=gfx928")
+list(REMOVE_ITEM current_hip_device_options "-xhip")
+list(REMOVE_ITEM current_hip_device_options "-mllvm")
+list(REMOVE_ITEM current_hip_device_options "-amdgpu-early-inline-all=true")
+list(REMOVE_ITEM current_hip_device_options "-amdgpu-function-calls=false")
+
+# 3. 重新设置 INTERFACE_COMPILE_OPTIONS 属性
+set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${current_hip_device_options})
+message(STATUS "Modified hip::device INTERFACE_COMPILE_OPTIONS: ${current_hip_device_options}")
 
 add_subdirectory(ci)

@@ -29,8 +29,13 @@ limitations under the License.
 namespace {
 std::string RemoveProjectPathPrefix(const std::string& filename) {
 #if defined(ONEFLOW_SOURCE_DIR) && defined(ONEFLOW_BINARY_DIR)
+#ifdef WITH_ROCM
+  std::string project_path = "~/oneflow-hip";
+  std::string project_build_path = "~/oneflow-hip/build";
+#else
   std::string project_path = ONEFLOW_SOURCE_DIR;
   std::string project_build_path = ONEFLOW_BINARY_DIR;
+#endif
   if (filename.rfind(project_build_path, 0) == 0) {
     return std::filesystem::relative(filename, project_build_path);
   } else if (filename.rfind(project_path, 0) == 0) {

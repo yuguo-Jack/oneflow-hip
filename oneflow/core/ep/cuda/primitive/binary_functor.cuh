@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #ifdef WITH_ROCM
-#include <hipComplex.h>
+#include <hip/hip_complex.h>
 #else
 #include <cuComplex.h>
 #endif
@@ -540,7 +540,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kMul, hipComplex, hipComplex> 
   OF_DEVICE_FUNC BinaryFunctor(Scalar attr0, Scalar attr1) {}
 
   OF_DEVICE_FUNC hipComplex operator()(hipComplex src0, hipComplex src1) const {
-    return cuCmulf(src0, src1);
+    return hipCmulf(src0, src1);
   }
 };
 
@@ -549,7 +549,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kDiv, hipComplex, hipComplex> 
   OF_DEVICE_FUNC BinaryFunctor(Scalar attr0, Scalar attr1) {}
 
   OF_DEVICE_FUNC hipComplex operator()(hipComplex src0, hipComplex src1) const {
-    return cuCdivf(src0, src1);
+    return hipCdivf(src0, src1);
   }
 };
 
@@ -559,7 +559,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kMul, hipDoubleComplex, hipDou
   OF_DEVICE_FUNC BinaryFunctor(Scalar attr0, Scalar attr1) {}
 
   OF_DEVICE_FUNC hipDoubleComplex operator()(hipDoubleComplex src0, hipDoubleComplex src1) const {
-    return cuCmul(src0, src1);
+    return hipCmul(src0, src1);
   }
 };
 
@@ -568,7 +568,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kDiv, hipDoubleComplex, hipDou
   OF_DEVICE_FUNC BinaryFunctor(Scalar attr0, Scalar attr1) {}
 
   OF_DEVICE_FUNC hipDoubleComplex operator()(hipDoubleComplex src0, hipDoubleComplex src1) const {
-    return cuCdiv(src0, src1);
+    return hipCdiv(src0, src1);
   }
 };
 
@@ -579,7 +579,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kSqrtBackwardWithDyX, hipCompl
   OF_DEVICE_FUNC hipComplex operator()(hipComplex dy, hipComplex x) const {
     // dy / (2 * sqrt(x).conj())
     hipComplex y = unary_functor(x);
-    return cuCdivf(dy, hipComplex{2.0f * y.x, -2.0f * y.y});
+    return hipCdivf(dy, hipComplex{2.0f * y.x, -2.0f * y.y});
   }
 };
 
@@ -591,7 +591,7 @@ struct BinaryFunctor<DeviceType::kCUDA, BinaryOp::kSqrtBackwardWithDyX, hipDoubl
   OF_DEVICE_FUNC hipDoubleComplex operator()(hipDoubleComplex dy, hipDoubleComplex x) const {
     // dy / (2 * sqrt(x).conj())
     hipDoubleComplex y = unary_functor(x);
-    return cuCdiv(dy, hipDoubleComplex{2.0 * y.x, -2.0 * y.y});
+    return hipCdiv(dy, hipDoubleComplex{2.0 * y.x, -2.0 * y.y});
   }
 };
 

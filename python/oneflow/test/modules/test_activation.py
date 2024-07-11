@@ -276,10 +276,6 @@ class TestGelu(flow.unittest.TestCase):
         torch.nn.functional.gelu(torch.ones(16, 128, 28, 28))
 
 
-@unittest.skipIf(
-    float(pytorch.__version__[:4]) < 1.12,
-    f"need pytorch version >= 1.12, got {pytorch.__version__}",
-)
 @flow.unittest.skip_unless_1n1d()
 class TestFastGelu(flow.unittest.TestCase):
     @autotest(n=5)

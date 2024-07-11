@@ -28,7 +28,7 @@ limitations under the License.
 
 #elif defined(__HIPCC__)
 
-#include <hip/hsa_detail/math_functions.h>
+#include <hip/math_functions.h>
 #include <hip/hip_fp16.h>
 
 #if defined(__HIP_DEVICE_COMPILE__)

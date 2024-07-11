@@ -268,7 +268,7 @@ REGISTER_PRIMITIVE_FACTORY(DeviceType::kCUDA, BroadcastMatmulFactory, BroadcastM
 #include "oneflow/core/device/cuda_util.h"
 #include "oneflow/core/ep/cuda/cuda_stream.h"
 #include <hip/hip_runtime.h>
-#include <hipComplex.h>
+#include <hip/hip_complex.h>
 
 namespace oneflow {
 
@@ -313,9 +313,9 @@ union CublasScalarParameter {
 
 CublasScalarParameter GetCublasScalarParameter(Scalar scalar, hipblasDatatype_t compute_type) {
   CublasScalarParameter sp{};
-  if (compute_type == HIPBLAS_R_64F) {
+  if (compute_type == HIPBLAS_R_64F || compute_type == HIPBLAS_C_64F) {
     sp.d = scalar.Value<double>();
-  } else if (compute_type == HIPBLAS_R_32F) {
+  } else if (compute_type == HIPBLAS_R_32F || compute_type == HIPBLAS_C_32F) {
     sp.s = scalar.Value<float>();
   } else if (compute_type == HIPBLAS_R_16F) {
     sp.h = static_cast<half>(scalar.Value<float>());

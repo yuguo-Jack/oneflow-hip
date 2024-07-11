@@ -335,12 +335,12 @@ OF_DEVICE_FUNC T GetZeroVal() {
 #ifdef WITH_ROCM
 template<typename T, typename std::enable_if<std::is_same<T, hipComplex>::value>::type* = nullptr>
 OF_DEVICE_FUNC T GetZeroVal() {
-  return make_cuFloatComplex((float)0.0, (float)0.0);
+  return make_hipFloatComplex((float)0.0, (float)0.0);
 }
 template<typename T,
          typename std::enable_if<std::is_same<T, hipDoubleComplex>::value>::type* = nullptr>
 OF_DEVICE_FUNC T GetZeroVal() {
-  return make_cuDoubleComplex((double)0.0, (double)0.0);
+  return make_hipDoubleComplex((double)0.0, (double)0.0);
 }
 #endif  // WITH_ROCM
 
@@ -367,13 +367,13 @@ OF_DEVICE_FUNC T GetOneVal() {
 #ifdef WITH_ROCM
 template<typename T, typename std::enable_if<std::is_same<T, hipComplex>::value>::type* = nullptr>
 OF_DEVICE_FUNC T GetOneVal() {
-  return make_cuFloatComplex((float)1.0, (float)1.0);
+  return make_hipFloatComplex((float)1.0, (float)1.0);
 }
 
 template<typename T,
          typename std::enable_if<std::is_same<T, hipDoubleComplex>::value>::type* = nullptr>
 OF_DEVICE_FUNC T GetOneVal() {
-  return make_cuDoubleComplex((double)1.0, (double)1.0);
+  return make_hipDoubleComplex((double)1.0, (double)1.0);
 }
 #endif  // WITH_ROCM
 

@@ -23,7 +23,7 @@ limitations under the License.
 
 namespace oneflow {
 
-#if defined(__CUDACC__)
+#if defined(__CUDACC__) || defined(__HIPCC__)
 #define OF_DEVICE_FUNCTION __device__ __host__ __forceinline__
 #else
 #define OF_DEVICE_FUNCTION inline

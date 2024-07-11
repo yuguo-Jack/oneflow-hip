@@ -138,6 +138,7 @@ REGISTER_ARANGE_KERNELS_WITH_CUDA_HALF(DeviceType::kCUDA);
 #endif
 #if defined(WITH_ROCM)
 REGISTER_ARANGE_KERNELS_WITH_DEVICE(DeviceType::kCUDA);
+REGISTER_ARANGE_KERNELS_WITH_CUDA_HALF(DeviceType::kCUDA);
 #endif
 }  // namespace user_op
 }  // namespace oneflow

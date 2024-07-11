@@ -16,7 +16,7 @@ limitations under the License.
 #ifndef ONEFLOW_CORE_EP_PRIMITIVE_FAST_INTEGER_MATH_H_
 #define ONEFLOW_CORE_EP_PRIMITIVE_FAST_INTEGER_MATH_H_
 #include "oneflow/core/common/data_type.h"
-#ifdef WITH_ROCM
+#ifdef __HIPCC__
 #include "hip/device_functions.h" // /opt/rocm/hip/include/hip
 #endif
 #include <cassert>

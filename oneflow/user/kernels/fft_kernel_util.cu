@@ -303,6 +303,22 @@ struct FftC2RKernelUtil<DeviceType::kCUDA, IN, OUT> {
   }
 };
 
+#ifdef WITH_ROCM
+template struct FillConjSymmetryUtil<DeviceType::kCUDA, hipComplex>;
+template struct FillConjSymmetryUtil<DeviceType::kCUDA, hipDoubleComplex>;
+
+template struct ComplexConvertUtil<DeviceType::kCUDA, float, hipComplex>;
+template struct ComplexConvertUtil<DeviceType::kCUDA, double, hipDoubleComplex>;
+
+template struct FftC2CKernelUtil<DeviceType::kCUDA, hipComplex, /*FCT_TYPE=*/float>;
+template struct FftC2CKernelUtil<DeviceType::kCUDA, hipDoubleComplex, /*FCT_TYPE=*/double>;
+
+template struct FftR2CKernelUtil<DeviceType::kCUDA, float, hipComplex>;
+template struct FftR2CKernelUtil<DeviceType::kCUDA, double, hipDoubleComplex>;
+
+template struct FftC2RKernelUtil<DeviceType::kCUDA, hipComplex, float>;
+template struct FftC2RKernelUtil<DeviceType::kCUDA, hipDoubleComplex, double>;
+#else
 template struct FillConjSymmetryUtil<DeviceType::kCUDA, cuComplex>;
 template struct FillConjSymmetryUtil<DeviceType::kCUDA, cuDoubleComplex>;
 
@@ -317,6 +333,7 @@ template struct FftR2CKernelUtil<DeviceType::kCUDA, double, cuDoubleComplex>;
 
 template struct FftC2RKernelUtil<DeviceType::kCUDA, cuComplex, float>;
 template struct FftC2RKernelUtil<DeviceType::kCUDA, cuDoubleComplex, double>;
+#endif
 }  // namespace oneflow
 
 #endif  // CUDA_VERSION >= 11000

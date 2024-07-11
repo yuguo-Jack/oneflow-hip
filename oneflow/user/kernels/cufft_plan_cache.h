@@ -216,7 +216,7 @@ class CuFFTConfig {
     cufft_dim_vector fft_shape(params.data_shape.begin() + 1, params.data_shape.end());
     cufft_size_type batch = params.data_shape[0];
     if (is_layout_simple) {
-      OF_CUFFT_CHECK(hipfftMakePlanMany(plan_handle_.get(), params.ndim, fft_shape.data(),
+      OF_CUFFT_CHECK(hipfftMakePlanMany(plan_handle_.get(), params.ndim, reinterpret_cast<int*>(fft_shape.data()),
                                          /*inembed=*/nullptr, /*istride=*/1, /*idist=*/1,
                                          /*onembed=*/nullptr, /*ostride=*/1, /*odist=*/1,
                                          /*executiontype=*/data_type_desc_.executiontype,
@@ -224,10 +224,10 @@ class CuFFTConfig {
                                          ));
     } else {
       OF_CUFFT_CHECK(hipfftMakePlanMany(
-          plan_handle_.get(), params.ndim, fft_shape.data(),
-          /*inembed=*/input_layout.embed.data(), /*istride=*/input_layout.stride,
+          plan_handle_.get(), params.ndim, reinterpret_cast<int*>(fft_shape.data()),
+          /*inembed=*/reinterpret_cast<int*>(input_layout.embed.data()), /*istride=*/input_layout.stride,
           /*idist=*/input_layout.dist, 
-          /*onembed=*/output_layout.embed.data(), /*ostride=*/output_layout.stride,
+          /*onembed=*/reinterpret_cast<int*>(output_layout.embed.data()), /*ostride=*/output_layout.stride,
           /*odist=*/output_layout.dist, 
           /*executiontype=*/data_type_desc_.executiontype,
           /*batch=*/batch, /*workSize=*/&work_size_
@@ -254,7 +254,7 @@ class CuFFTConfig {
           CHECK_OR_THROW(false) << "hipFFT doesn't support this execution";
           break;
       }
-    } else if (real_data_type == kDouble) {
+    } else if (execparams.real_data_type == kDouble) {
       switch (execparams.excute_type) {
         case CUFFT_EXCUTETYPE::R2C: 
           OF_CUFFT_CHECK(hipfftExecD2Z(plan_handle_.get(), static_cast<hipfftDoubleReal*>(input), static_cast<hipfftDoubleComplex*>(output)));
@@ -270,7 +270,7 @@ class CuFFTConfig {
           break;
       }
     } else {
-      CHECK_OR_THROW(false) << "hipFFT doesn't support type " << real_data_type;
+      CHECK_OR_THROW(false) << "hipFFT doesn't support type " << execparams.real_data_type;
     }
   }
 

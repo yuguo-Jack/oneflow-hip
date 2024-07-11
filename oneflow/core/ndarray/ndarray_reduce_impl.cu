@@ -452,14 +452,14 @@ struct NanSum {
 
 }  // namespace hipcub
 
-__host__ __device__ __forceinline__ hipComplex operator+(const hipComplex& a, const hipComplex& b) {
-  return hipComplex{a.x + b.x, a.y + b.y};
-}
+// __host__ __device__ __forceinline__ hipComplex operator+(const hipComplex& a, const hipComplex& b) {
+//   return hipComplex{a.x + b.x, a.y + b.y};
+// }
 
-__host__ __device__ __forceinline__ hipDoubleComplex operator+(const hipDoubleComplex& a,
-                                                              const hipDoubleComplex& b) {
-  return hipDoubleComplex{a.x + b.x, a.y + b.y};
-}
+// __host__ __device__ __forceinline__ hipDoubleComplex operator+(const hipDoubleComplex& a,
+//                                                               const hipDoubleComplex& b) {
+//   return hipDoubleComplex{a.x + b.x, a.y + b.y};
+// }
 
 namespace oneflow {
 
