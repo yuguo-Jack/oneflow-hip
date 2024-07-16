@@ -28,7 +28,9 @@ namespace oneflow {
 Maybe<Symbol<Device>> ToOneFlowDevice(const DLDevice& ctx) {
   switch (ctx.device_type) {
     case DLDeviceType::kDLCPU: return JUST(Device::New("cpu"));
-#if defined(WITH_CUDA) || defined(WITH_ROCM)
+#if defined(WITH_ROCM)
+    case DLDeviceType::kDLROCM: return JUST(Device::New("cuda", ctx.device_id));
+#else
     case DLDeviceType::kDLCUDA: return JUST(Device::New("cuda", ctx.device_id));
 #endif
     default: UNIMPLEMENTED_THEN_RETURN() << "Unsupported device type: " << ctx.device_type;
@@ -134,7 +136,9 @@ Maybe<DLDevice> ToDLDevice(Symbol<Device> ofdevice) {
   ctx.device_id = ofdevice->device_id();
   switch (ofdevice->enum_type()) {
     case DeviceType::kCPU: ctx.device_type = DLDeviceType::kDLCPU; break;
-#if defined(WITH_CUDA) || defined(WITH_ROCM)
+#if defined(WITH_ROCM)
+    case DeviceType::kCUDA: ctx.device_type = DLDeviceType::kDLROCM; break;
+#else
     case DeviceType::kCUDA: ctx.device_type = DLDeviceType::kDLCUDA; break;
 #endif
     default: UNIMPLEMENTED_THEN_RETURN() << "Unsupported device type: " << ofdevice->type();
