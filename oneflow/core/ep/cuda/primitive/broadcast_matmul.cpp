@@ -331,7 +331,7 @@ hipblasDatatype_t GetComputeType(DataType data_type) {
     case kDouble: return HIPBLAS_R_64F;
     case kFloat16: {
       const bool allow_half_accumulation =
-          ParseBooleanFromEnv("ONEFLOW_MATMUL_ALLOW_HALF_PRECISION_ACCUMULATION", true);
+          ParseBooleanFromEnv("ONEFLOW_MATMUL_ALLOW_HALF_PRECISION_ACCUMULATION", false);
       if (allow_half_accumulation) {
         return HIPBLAS_R_16F;
       } else {
